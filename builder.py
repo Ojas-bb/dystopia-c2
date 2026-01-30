@@ -290,11 +290,17 @@ try:
                     try:
                         subprocess.check_call(["which", "xvfb-run"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                         compile_command.insert(0, "xvfb-run")
+                        compile_command.insert(1, "-a")
                         print("[+] No DISPLAY found, using xvfb-run for headless build")
                     except subprocess.CalledProcessError:
                         pass
 
-                subprocess.call(compile_command)
+                # Ensure 32-bit Wine architecture is set
+                env = os.environ.copy()
+                env["WINEARCH"] = "win32"
+                env["WINEDEBUG"] = "-all"
+
+                subprocess.call(compile_command, env=env)
                 try:
                     os.remove(list[0]+".py");os.remove(list[0]+".spec")
                 except FileNotFoundError:

@@ -62,29 +62,40 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
         wget https://www.python.org/ftp/python/3.8.9/python-3.8.9.exe
     fi
 
-    # Determine installation mode (silent or not)
-    QUIET_MODE=""
-    for arg in "$@"; do
-        if [[ "$arg" == "-s" ]]; then
-            QUIET_MODE="/quiet"
-            break
-        fi
-    done
+    # Prepare Wine environment
+    export WINEARCH=win32
+    export WINEDEBUG=-all
 
-    echo "Installing Python 3.8.9 in Wine..."
-    # Using xvfb-run to avoid GUI errors if no X server is present
+    echo "Initializing Wine prefix (win32)..."
     if command -v xvfb-run &> /dev/null; then
-        xvfb-run wine cmd /c python-3.8.9.exe $QUIET_MODE InstallAllUsers=0 PrependPath=1 || echo "Wine installation command failed, might still have worked."
+        xvfb-run -a wineboot -i
     else
-        wine cmd /c python-3.8.9.exe $QUIET_MODE InstallAllUsers=0 PrependPath=1 || echo "Wine installation command failed, might still have worked."
+        wineboot -i
     fi
 
-    echo "Waiting for Wine to finish..."
-    sleep 10
+    echo "Installing Python 3.8.9 in Wine..."
+    echo "This process is silent and may take 2-5 minutes. Please wait..."
 
-    # Find where it was installed
-    CURRENT_USER=$(whoami)
-    PYTHON_EXE=$(find "$HOME/.wine" -name "python.exe" | grep "Python38-32" | head -n 1 || true)
+    # Force /quiet mode for headless compatibility
+    INSTALL_CMD="wine python-3.8.9.exe /quiet InstallAllUsers=0 PrependPath=1"
+
+    if command -v xvfb-run &> /dev/null; then
+        xvfb-run -a $INSTALL_CMD || echo "Wine installation command returned non-zero, checking if it worked anyway..."
+    else
+        $INSTALL_CMD || echo "Wine installation command returned non-zero, checking if it worked anyway..."
+    fi
+
+    echo "Waiting for installation to settle..."
+    sleep 20
+
+    # Find where it was installed with retries
+    PYTHON_EXE=""
+    for i in {1..6}; do
+        echo "Searching for python.exe (Attempt $i)..."
+        PYTHON_EXE=$(find "$HOME/.wine" -name "python.exe" | grep "Python38-32" | head -n 1 || true)
+        if [[ -n "$PYTHON_EXE" ]]; then break; fi
+        sleep 10
+    done
 
     if [[ -z "$PYTHON_EXE" ]]; then
         echo "Searching in /root/.wine as fallback..."
@@ -93,20 +104,22 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 
     if [[ -z "$PYTHON_EXE" ]]; then
         echo "[!] Could not find python.exe in Wine environment."
-        echo "[!] You may need to install it manually using: wine python-3.8.9.exe"
+        echo "[!] Installation likely failed. Try running: xvfb-run -a wine python-3.8.9.exe"
     else
         echo "Found Python in Wine: $PYTHON_EXE"
         echo "Installing Python packages in Wine..."
-        # Using script to avoid "Invalid handle" errors in non-interactive shells
+
+        # Use absolute path for pip and handle "Invalid handle" issues
+        # psutil 5.9.5 has pre-built 32-bit wheels for Python 3.8
         INSTALL_CMD="wine \"$PYTHON_EXE\" -m pip install --upgrade pip && \
                      wine \"$PYTHON_EXE\" -m pip install wheel && \
                      wine \"$PYTHON_EXE\" -m pip install psutil==5.9.5 && \
                      wine \"$PYTHON_EXE\" -m pip install pillow==8.3.2 pyscreeze==0.1.28 pyautogui==0.9.52 keyboard==0.13.5 pywin32==303 pycryptodome==3.12.0 pyinstaller==5.3 discord_webhook==0.14.0 discord.py opencv-python==4.5.3.56 sounddevice scipy==1.9.0 pyTelegramBotAPI PyGithub"
 
         if command -v script &> /dev/null; then
-            script -q -c "$INSTALL_CMD" /dev/null
+            script -q -c "export WINEDEBUG=-all && export WINEARCH=win32 && $INSTALL_CMD" /dev/null
         else
-            eval "$INSTALL_CMD"
+            eval "export WINEDEBUG=-all && export WINEARCH=win32 && $INSTALL_CMD"
         fi
     fi
 fi

